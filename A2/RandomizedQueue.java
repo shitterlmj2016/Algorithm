@@ -1,5 +1,6 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
 import edu.princeton.cs.algs4.StdRandom;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
@@ -28,6 +29,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }// return the number of items on the randomized queue
 
     public void enqueue(Item item) {
+        if (item == null) throw new java.lang.IllegalArgumentException();
         RandomizedQueue.Node<Item> oldlast = last;
         last = new RandomizedQueue.Node<Item>();
         last.item = item;
@@ -53,12 +55,15 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         Item item = (Item) curr.next.item;
         curr.next = curr.next.next;
         n--;
-        if (isEmpty()) last = null;   // to avoid loitering
+        if (curr.next == null)
+            last = curr;//这句话忘记写了
         return item;
+
     }// remove and return a random item
 
 
     private Item olddequeue() {
+        if (isEmpty()) throw new NoSuchElementException("Queue underflow");
         Item item = first.item;
         first = first.next;
         n--;
@@ -79,8 +84,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             curr = curr.next;
         }
 
-        Item item = (Item) curr.next.item;
-        return item;
+        return (Item)curr.next.item;
     }// return a random item (but do not remove it)
 
     public Iterator<Item> iterator() {
@@ -90,16 +94,18 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public static void main(String[] args) {
         RandomizedQueue rq = new RandomizedQueue();
         rq.enqueue(1);
+        rq.enqueue(0);
         rq.enqueue(2);
         rq.enqueue(3);
         rq.enqueue(4);
         rq.enqueue(5);
         rq.enqueue(6);
-
-        Iterator<Integer> it = rq.iterator();
-        while(it.hasNext())
-        {
-            System.out.println(it.next());
+//        for(int i=0;i<100;i++)
+//        {
+//           rq.enqueue(i);
+//        }
+        for (int i = 0; i < 100; i++) {
+            System.out.println(rq.sample());
         }
     }// unit testing (optional)
 
@@ -107,23 +113,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private class RandomizedQueueListIterator<Item> implements Iterator<Item> {
         private Node<Item> current;
         private int size;
-        private Node [] array;
+        private Node[] array;
 
         public RandomizedQueueListIterator(Node<Item> first) {
             current = first;
-            Node<Item> temp=current;
-            size=n;
-            array =new Node[size];
+            Node<Item> temp = current;
+            size = n;
+            array = new Node[size];
 
-            for(int i=0;i<size;i++)
-            {
-                array[i]=temp;
-                temp=temp.next;
+            for (int i = 0; i < size; i++) {
+                array[i] = temp;
+                temp = temp.next;
             }
             StdRandom.shuffle(array);
         }
-
-
 
 
         public boolean hasNext() {
@@ -136,7 +139,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         public Item next() {
             if (!hasNext()) throw new NoSuchElementException();
-            Item item =(Item)array[size-1].item;
+            Item item = (Item) array[size - 1].item;
             size--;
             return item;
         }
