@@ -3,10 +3,16 @@ import edu.princeton.cs.algs4.StdIn;
 public class Permutation {
     public static void main(String[] args)
     {
-        Deque deque = new Deque();
-//        int k=Integer.parseInt(args[1]);
-////        String a = StdIn.readString();
-////        System.out.println(a+k);
-//
+        RandomizedQueue rq=new RandomizedQueue();
+        int k=Integer.parseInt(args[0]);
+        while (!StdIn.isEmpty())
+        {
+           rq.enqueue(StdIn.readString());
+        }
+        for(int i=0;i<k;i++)
+        {
+            System.out.println(rq.dequeue());
+        }
+
     }
 }
