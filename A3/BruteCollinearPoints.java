@@ -1,17 +1,16 @@
-
+import java.util.Arrays;
 
 public class BruteCollinearPoints {
     private Point[] points;
-//    private int num;
-//    private LineSegment[] ls;
+    private int num;
+    private LineSegment[] ls;
 
     public BruteCollinearPoints(Point[] points)    // finds all line segments containing 4 points
     {
         if (points == null) {
             throw new java.lang.IllegalArgumentException();
         }
-        int[] x = new int[points.length];
-        int[] y = new int[points.length];
+
         for (int i = 0; i < points.length; i++) {
             if (points[i] == null) {
                 throw new java.lang.IllegalArgumentException();
@@ -29,15 +28,8 @@ public class BruteCollinearPoints {
             }
         }
         this.points = points.clone();
+        Arrays.sort(this.points);
 
-//        num=0;
-//        ls=new LineSegment[];
-    }
-
-    public int numberOfSegments()        // the number of line segments
-    {
-        if (points == null)
-            throw new IllegalArgumentException();
         int count = 0;
         int n = points.length;
         for (int i = 0; i < n; i++) {
@@ -52,19 +44,16 @@ public class BruteCollinearPoints {
                 }
             }
         }
-        return count;
-    }
+        num=count;
 
-    public LineSegment[] segments()                // the line segments
-    {
         int num = numberOfSegments();
-        LineSegment[] ls = new LineSegment[num];
-        int count = 0;
-        int n = points.length;
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                for (int k = j + 1; k < n; k++) {
-                    for (int l = k + 1; l < n; l++) {
+        ls = new LineSegment[num];
+        int countt = 0;
+        int nn = points.length;
+        for (int i = 0; i < nn; i++) {
+            for (int j = i + 1; j < nn; j++) {
+                for (int k = j + 1; k < nn; k++) {
+                    for (int l = k + 1; l < nn; l++) {
                         if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[k]) &&
                                 points[i].slopeTo(points[k]) == points[i].slopeTo(points[l])) {
                             int hi = i;
@@ -94,14 +83,25 @@ public class BruteCollinearPoints {
                                 lo = l;
                             }
 
-                            ls[count] = new LineSegment(points[lo], points[hi]);
-                            count++;
+                            ls[countt] = new LineSegment(points[lo], points[hi]);
+                            countt++;
                         }
                     }
                 }
             }
 
         }
+
+    }
+
+    public int numberOfSegments()        // the number of line segments
+    {
+       return num;
+    }
+
+    public LineSegment[] segments()                // the line segments
+    {
+
 
         return ls;
     }

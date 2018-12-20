@@ -95,7 +95,13 @@ public class FastCollinearPoints {
     }
 
     public LineSegment[] segments() {
-        return ls.toArray(LineSegment[]::new);
+
+
+        LineSegment[]temp = new LineSegment[ls.size()];
+        for (int i = 0; i <ls.size() ; i++) {
+            temp[i]=ls.get(i);
+        }
+        return temp;
     }                // the line segments
 
     public static void main(String[] args) {
