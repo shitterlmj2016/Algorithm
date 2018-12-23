@@ -116,12 +116,14 @@ public class Solver {
             }
 
 
-            ArrayList<Board> neighbors = (ArrayList<Board>) current.getBoard().neighbors();
-            for (int i = 0; i < neighbors.size(); i++) {
-                Node ins = new Node(neighbors.get(i), current.getSteps() + 1, current);
+            Iterable<Board> neighbors = current.getBoard().neighbors();
+            for(Board neighbour : neighbors)
+            {
+                Node ins = new Node(neighbour, current.getSteps() + 1, current);
                 if (!current.inFather(ins))
                     pq.insert(ins);
             }
+
 
 
             if (!tpq.isEmpty()) {
@@ -129,16 +131,30 @@ public class Solver {
 
                 if (tcurrent.getBoard().isGoal()) {
                     solvable = false;
-//                    System.out.println("No answer!!!");
+//                   System.out.println("No answer!!!");
                     break;
                 }
 
-                ArrayList<Board> tneighbors = (ArrayList<Board>) tcurrent.getBoard().neighbors();
-                for (int i = 0; i < tneighbors.size(); i++) {
-                    Node ins = new Node(tneighbors.get(i), tcurrent.getSteps() + 1, tcurrent);
+//                ArrayList<Board> tneighbors = (ArrayList<Board>) tcurrent.getBoard().neighbors();
+//                for (int i = 0; i < tneighbors.size(); i++) {
+//                    Node ins = new Node(tneighbors.get(i), tcurrent.getSteps() + 1, tcurrent);
+//                    if (!tcurrent.inFather(ins))
+//                        tpq.insert(ins);
+//
+//
+//                }
+
+                Iterable<Board> tneighbors = tcurrent.getBoard().neighbors();
+                for(Board tneighbour : tneighbors)
+                {
+                    Node ins = new Node(tneighbour, tcurrent.getSteps() + 1, tcurrent);
                     if (!tcurrent.inFather(ins))
                         tpq.insert(ins);
                 }
+
+
+
+
             }
 
 
@@ -213,7 +229,7 @@ public class Solver {
 //        int[][] no = {{1, 2, 3}, {4, 5, 6}, {8, 7, 0}};
 //        int[][] ss = {{2,1},{3,0}};
 //
-//        Solver s = new Solver(new Board(no));
+//        Solver s = new Solver(new Board(test));
 //        System.out.println("---------------------------------------");
 //        ArrayList<Board> ab = (ArrayList<Board>) s.solution();
 //        for (int i = 0; i < ab.size(); i++) {
