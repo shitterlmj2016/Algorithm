@@ -7,9 +7,8 @@ import java.util.Stack;
 
 public class Solver {
     private Node root;
-
+    //pq不要作为成员变量
     private int steps;
-    private MinPQ<Node> pq;
     private boolean solvable;
 
     private Stack<Board> answerStack;
@@ -48,18 +47,19 @@ public class Solver {
 
         public boolean inFather(Node n) {
             Node pointer = this;
+//
+//            if (pointer.getBoard().equals(n.getBoard()))
+//                return true;
 
-            if (pointer.getBoard().equals(n.getBoard()))
-                return true;
-
-            while (pointer.father != null) {
+            if (pointer.father != null) {
                 pointer = pointer.father;
 
                 if (pointer.getBoard().equals(n.getBoard()))
                     return true;
-
-
             }
+            //只找一层最快！！
+
+
 
             return false;
         }
@@ -77,19 +77,15 @@ public class Solver {
         Node troot = new Node(initial.twin(), 0, null);
 
 
-
-
         steps = 0;
 
-        pq = new MinPQ<Node>();
+        MinPQ<Node> pq = new MinPQ<Node>();
         pq.insert(root);
 //        System.out.println(root.getBoard());
 
 
         MinPQ<Node> tpq = new MinPQ<Node>();
         tpq.insert(troot);
-
-        int count = 0;
 
         while (!pq.isEmpty()) {
             Node current = pq.delMin();
@@ -105,25 +101,22 @@ public class Solver {
 //                System.out.println("Traces to father");
 
                 Node pointer = current;
-                System.out.println(current.getBoard());
+
                 answerStack.push(pointer.getBoard());
                 while (pointer.getFather() != null) {
                     pointer = pointer.getFather();
                     answerStack.push(pointer.getBoard());
-                    System.out.println(pointer.getBoard());
                 }
                 break;
             }
 
 
             Iterable<Board> neighbors = current.getBoard().neighbors();
-            for(Board neighbour : neighbors)
-            {
+            for (Board neighbour : neighbors) {
                 Node ins = new Node(neighbour, current.getSteps() + 1, current);
                 if (!current.inFather(ins))
                     pq.insert(ins);
             }
-
 
 
             if (!tpq.isEmpty()) {
@@ -145,14 +138,11 @@ public class Solver {
 //                }
 
                 Iterable<Board> tneighbors = tcurrent.getBoard().neighbors();
-                for(Board tneighbour : tneighbors)
-                {
+                for (Board tneighbour : tneighbors) {
                     Node ins = new Node(tneighbour, tcurrent.getSteps() + 1, tcurrent);
                     if (!tcurrent.inFather(ins))
                         tpq.insert(ins);
                 }
-
-
 
 
             }
@@ -176,7 +166,7 @@ public class Solver {
 
     public int moves()                     // min number of moves to solve initial board; -1 if unsolvable
     {
-        if(!solvable)
+        if (!solvable)
             return -1;
         return this.steps;
     }
@@ -187,8 +177,11 @@ public class Solver {
         if (!isSolvable())
             return null;
         ArrayList<Board> ans = new ArrayList<Board>();
-        while (!answerStack.isEmpty()) {
-            ans.add(answerStack.pop());
+        Stack<Board> stack = (Stack<Board>) answerStack.clone();
+
+
+        while (!stack.isEmpty()) {
+            ans.add(stack.pop());
         }
         return ans;
     }
