@@ -1,9 +1,18 @@
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.util.ArrayList;
+import java.util.Stack;
 
 public class Solver {
     private Node root;
+
     private int steps;
     private MinPQ<Node> pq;
+    private boolean solvable;
+
+    private Stack<Board> answerStack;
 
     private class Node implements Comparable<Node> {
 
@@ -36,6 +45,26 @@ public class Solver {
         public int compareTo(Node n) {
             return Integer.compare(this.getPriority(), n.getPriority());
         }
+
+        public boolean inFather(Node n) {
+            Node pointer = this;
+
+            if (pointer.getBoard().equals(n.getBoard()))
+                return true;
+
+            while (pointer.father != null) {
+                pointer = pointer.father;
+
+                if (pointer.getBoard().equals(n.getBoard()))
+                    return true;
+
+
+            }
+
+            return false;
+        }
+
+
     }
 
 
@@ -45,32 +74,109 @@ public class Solver {
             throw new IllegalArgumentException("Null arguments!");
 
         root = new Node(initial, 0, null);
+        Node troot = new Node(initial.twin(), 0, null);
+
+
+
+
         steps = 0;
+
+        pq = new MinPQ<Node>();
         pq.insert(root);
+//        System.out.println(root.getBoard());
 
 
-        int[][] a = {{1, 2}, {0, 3}};
-        MinPQ pq = new MinPQ();
-        Board b = new Board(a);
-        b.manhattan();
+        MinPQ<Node> tpq = new MinPQ<Node>();
+        tpq.insert(troot);
+
+        int count = 0;
+
+        while (!pq.isEmpty()) {
+            Node current = pq.delMin();
+            if (current.getBoard().isGoal()) {
+                solvable = true;
+
+                answerStack = new Stack<Board>();
+                steps = current.getSteps();
+
+//
+//                System.out.println("Answers found!");
+//                System.out.println("Steps: " + current.getSteps());
+//                System.out.println("Traces to father");
+
+                Node pointer = current;
+                System.out.println(current.getBoard());
+                answerStack.push(pointer.getBoard());
+                while (pointer.getFather() != null) {
+                    pointer = pointer.getFather();
+                    answerStack.push(pointer.getBoard());
+                    System.out.println(pointer.getBoard());
+                }
+                break;
+            }
+
+
+            ArrayList<Board> neighbors = (ArrayList<Board>) current.getBoard().neighbors();
+            for (int i = 0; i < neighbors.size(); i++) {
+                Node ins = new Node(neighbors.get(i), current.getSteps() + 1, current);
+                if (!current.inFather(ins))
+                    pq.insert(ins);
+            }
+
+
+            if (!tpq.isEmpty()) {
+                Node tcurrent = tpq.delMin();
+
+                if (tcurrent.getBoard().isGoal()) {
+                    solvable = false;
+//                    System.out.println("No answer!!!");
+                    break;
+                }
+
+                ArrayList<Board> tneighbors = (ArrayList<Board>) tcurrent.getBoard().neighbors();
+                for (int i = 0; i < tneighbors.size(); i++) {
+                    Node ins = new Node(tneighbors.get(i), tcurrent.getSteps() + 1, tcurrent);
+                    if (!tcurrent.inFather(ins))
+                        tpq.insert(ins);
+                }
+            }
+
+
+        }
+
+
+//        int[][] a = {{1, 2}, {0, 3}};
+//        MinPQ pq = new MinPQ();
+//        Board b = new Board(a);
+//        b.manhattan();
     }
 
     public boolean isSolvable()            // is the initial board solvable?
     {
 
         //两个同时找，总有一个能找到，谁先找到谁出结果
-        return true;
+        return solvable;
     }
 
     public int moves()                     // min number of moves to solve initial board; -1 if unsolvable
     {
-        return 1;
+        if(!solvable)
+            return -1;
+        return this.steps;
     }
 
     public Iterable<Board> solution()      // sequence of boards in a shortest solution; null if unsolvable
     {
-        return null;
+
+        if (!isSolvable())
+            return null;
+        ArrayList<Board> ans = new ArrayList<Board>();
+        while (!answerStack.isEmpty()) {
+            ans.add(answerStack.pop());
+        }
+        return ans;
     }
+
 
     public static void main(String[] args) // solve a slider puzzle (given below)
     {
@@ -102,6 +208,39 @@ public class Solver {
 //            System.out.println(pointer.getBoard());
 //
 //        }
+
+//        int[][] test = {{0, 1, 3}, {4, 2, 5}, {7, 8, 6}};
+//        int[][] no = {{1, 2, 3}, {4, 5, 6}, {8, 7, 0}};
+//        int[][] ss = {{2,1},{3,0}};
+//
+//        Solver s = new Solver(new Board(no));
+//        System.out.println("---------------------------------------");
+//        ArrayList<Board> ab = (ArrayList<Board>) s.solution();
+//        for (int i = 0; i < ab.size(); i++) {
+//            System.out.println(ab.get(i));
+//
+//        }
+
+
+        In in = new In(args[0]);
+        int n = in.readInt();
+        int[][] blocks = new int[n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                blocks[i][j] = in.readInt();
+        Board initial = new Board(blocks);
+
+        // solve the puzzle
+        Solver solver = new Solver(initial);
+
+        // print solution to standard output
+        if (!solver.isSolvable())
+            StdOut.println("No solution possible");
+        else {
+            StdOut.println("Minimum number of moves = " + solver.moves());
+            for (Board board : solver.solution())
+                StdOut.println(board);
+        }
 
 
     }

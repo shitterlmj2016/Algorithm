@@ -102,7 +102,7 @@ public class Board {
         int row = 0;
         int col = 0;
         if (blocks[row][col] == 0) {
-            int[][] newBlock = blocks.clone();
+            int[][] newBlock = copy(blocks);
             int a = newBlock[row + 1][col];
             newBlock[row + 1][col] = newBlock[row][col + 1];
             newBlock[row][col + 1] = a;
@@ -112,7 +112,7 @@ public class Board {
         col++;
         if (blocks[row][col] == 0)
             row++;
-        int[][] newBlock = blocks.clone();
+        int[][] newBlock = copy(blocks);
         int a = newBlock[0][0];
         newBlock[0][0] = newBlock[row][col];
         newBlock[row][col] = a;
