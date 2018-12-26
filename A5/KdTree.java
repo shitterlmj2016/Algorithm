@@ -4,10 +4,14 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
+import java.util.ArrayList;
+
 
 public class KdTree {
     private int size;
     private Node root;
+    private Point2D result;
+
     private class Node {
 
 
@@ -129,7 +133,7 @@ public class KdTree {
 
     public void draw()                         // draw all points to standard draw
     {
-        StdDraw.setPenRadius(0.01);
+
         if (size == 0)
             return;
         draw(root, 0);
@@ -140,7 +144,7 @@ public class KdTree {
             return;
         int a = steps + 1;
         draw(n.left, a);
-
+        StdDraw.setPenRadius(0.01);
         if (steps % 2 == 0) {
             StdDraw.setPenColor(StdDraw.RED);
             Point2D p1 = new Point2D(n.point.x(), n.rect.ymin());
@@ -154,8 +158,8 @@ public class KdTree {
 
         }
         StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(0.015);
         n.point.draw();
-
         draw(n.right, a);
 
     }
@@ -165,8 +169,32 @@ public class KdTree {
     {
         if (rect == null)
             throw new IllegalArgumentException();
-        return null;
+
+        ArrayList<Point2D> array = new ArrayList();
+
+        RectHV copy = new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), rect.ymax());
+        search(root, copy, array);
+
+        return array;
     }
+
+
+    private void search(Node node, RectHV rect, ArrayList<Point2D> array) {
+        if (node == null)
+            return;
+
+
+        if (rect.contains(node.point)) {
+            array.add(node.point);
+        }
+
+        if (node.rect.intersects(rect)) {
+            search(node.left, rect, array);
+            search(node.right, rect, array);
+        }
+
+    }
+
 
     public Point2D nearest(Point2D p)             // a nearest neighbor in the set to point p; null if the set is empty
     {
@@ -176,21 +204,60 @@ public class KdTree {
         if (isEmpty())
             return null;
 
-        return null;
+        Point2D copy = new Point2D(p.x(), p.y());
+
+        result = new Point2D(root.point.x(), root.point.y());
+
+        Double distance = Double.POSITIVE_INFINITY;
+        min(root, distance, copy);
+
+        return result;
     }
+
+    private void min(Node node, Double distance, Point2D target) {
+        if (node == null) return;
+        if (node.rect.distanceTo(target) > distance) {
+            return;
+        }
+
+
+        if (node.point.distanceTo(target) < distance) {
+
+            result = new Point2D(node.point.x(), node.point.y());
+            distance = node.point.distanceTo(target);
+        }
+        min(node.left, distance, target);
+
+        min(node.right, distance, target);
+
+
+    }
+
 
     public static void main(String[] args)                  // unit testing of the methods (optional)
     {
-        Point2D p1 = new Point2D(0.206107, 0.095492);
-        Point2D p2 = new Point2D(0.975528, 0.654508);
-        Point2D p3 = new Point2D(0.024472, 0.345492);
-        Point2D p4 = new Point2D(0.793893, 0.095492);
-        Point2D p5 = new Point2D(0.793893, 0.904508);
-        Point2D p6 = new Point2D(0.975528, 0.345492);
-        Point2D p7 = new Point2D(0.206107, 0.904508);
-        Point2D p8 = new Point2D(0.500000, 0.000000);
-        Point2D p9 = new Point2D(0.024472, 0.654508);
-        Point2D p10 = new Point2D(0.500000, 1.000000);
+//        Point2D p1 = new Point2D(0.206107, 0.095492);
+//        Point2D p2 = new Point2D(0.975528, 0.654508);
+//        Point2D p3 = new Point2D(0.024472, 0.345492);
+//        Point2D p4 = new Point2D(0.793893, 0.095492);
+//        Point2D p5 = new Point2D(0.793893, 0.904508);
+//        Point2D p6 = new Point2D(0.975528, 0.345492);
+//        Point2D p7 = new Point2D(0.206107, 0.904508);
+//        Point2D p8 = new Point2D(0.500000, 0.000000);
+//        Point2D p9 = new Point2D(0.024472, 0.654508);
+//        Point2D p10 = new Point2D(0.500000, 1.000000);
+
+        Point2D p1 = new Point2D(0, 0);
+        Point2D p2 = new Point2D(0.1, 0.1);
+        Point2D p3 = new Point2D(0.2, 0.1);
+        Point2D p4 = new Point2D(0.2, 0.2);
+        Point2D p5 = new Point2D(0.4, 0.1);
+        Point2D p6 = new Point2D(0.6, 0.3);
+        Point2D p7 = new Point2D(0.5, 0.8);
+        Point2D p8 = new Point2D(0.500000, 0.1);
+        Point2D p9 = new Point2D(0.2, 0.7);
+        Point2D p10 = new Point2D(0.9, 0.8);
+
 
         KdTree k = new KdTree();
 
@@ -204,10 +271,10 @@ public class KdTree {
         k.insert(p8);
         k.insert(p9);
         k.insert(p10);
-k.insert(p1);
+        k.insert(p1);
 
-        k.draw();
 
+        System.out.println(k.nearest(new Point2D(1, 1)));
 
     }
 }
