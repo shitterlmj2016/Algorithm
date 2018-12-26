@@ -20,13 +20,15 @@ public class CloneTest {
 //        ArrayList as;
 //        as = new ArrayList<Integer>();
 ////        int i = as.get(1);
-        Stack<Integer> s1 = new Stack<Integer>();
-        s1.push(1);
-        s1.push(2);
-        s1.push(3);
-        Stack<Integer> s2=(Stack<Integer>)s1.clone();
-        s2.pop();
-        System.out.println(s1.pop());
+//
+        int a = 1;
+        int b = a;
+        b++;
+        b++;
+        int c = a;
+        b++;
+        System.out.println(a++);
+        System.out.println(a++);
 
 
 
