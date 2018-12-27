@@ -57,8 +57,11 @@ public class PointSET {
         ArrayList<Point2D> al = new ArrayList<Point2D>();
         for (Point2D p : set
         ) {
-            if (p.x() >= rect.xmin() && p.x() <= rect.xmax() && p.y() >= rect.ymin() && p.x() <= rect.ymax())
+
+            if (p.x() >= rect.xmin() && p.x() <= rect.xmax() && p.y() >= rect.ymin() && p.y() <= rect.ymax()) {
                 al.add(p);
+
+            }
         }
         return al;
     }
@@ -88,22 +91,25 @@ public class PointSET {
 
     public static void main(String[] args)                  // unit testing of the methods (optional)
     {
-        Point2D p1 = new Point2D(0.1, 0.1);
-        Point2D p2 = new Point2D(0.2, 0);
-        Point2D p3 = new Point2D(0.4, 0.4);
-        Point2D p4 = new Point2D(0.9, 0.1);
+//        Point2D p1 = new Point2D(0.1, 0.1);
+//        Point2D p2 = new Point2D(0.2, 0);
+//        Point2D p3 = new Point2D(0.4, 0.4);
+//        Point2D p4 = new Point2D(0.9, 0.1);
+
+        Point2D p1 = new Point2D(1, 1);
+        Point2D p2 = new Point2D(0.5, 0);
+
 
         PointSET ps = new PointSET();
 
         ps.insert(p1);
         ps.insert(p2);
-        ps.insert(p3);
-        ps.insert(p4);
+//        ps.insert(p3);
+//        ps.insert(p4);
 
 
-        RectHV r1 = new RectHV(0, 0, 0.4, 0.4);
+        RectHV r1 = new RectHV(0.25, 0,0.75, 0.25);
 
-        System.out.println(ps.size());
         System.out.println(ps.range(r1));
     }
 }

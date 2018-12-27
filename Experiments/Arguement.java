@@ -7,8 +7,8 @@ public class Arguement {
 
 
     public static void main(String[] args) {
-int b =1;
-change(b);
+        int b = 1;
+        change(b);
         System.out.println(b);
     }
 }
