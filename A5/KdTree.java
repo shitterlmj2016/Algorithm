@@ -56,7 +56,7 @@ public class KdTree {
     public void insert(Point2D p)              // add the point to the set (if it is not already in the set)
     {
 
-        if (p == null )
+        if (p == null)
             throw new IllegalArgumentException();
         //要不存在这个点时才添加
         if (!contains(p)) {
@@ -106,7 +106,7 @@ public class KdTree {
 
     public boolean contains(Point2D p)            // does the set contain point p?
     {
-        if (p == null )
+        if (p == null)
             throw new IllegalArgumentException();
         return get(root, p, 0) != null;
     }
@@ -227,25 +227,21 @@ public class KdTree {
 //        System.out.print(node + " - ");
 //        System.out.println(node.point.distanceTo(target));
 
-        if (node.left != null && node.left.rect.contains(target)) {
-            double record = distance;
-            min(node.left, target);
-           // if (distance < record)
-               // return;
 
-            min(node.right, target);
-        } else {
-            double record = distance;
-            min(node.right, target);
-           // if (distance < record)
-                //return;
-            min(node.left, target);
-        }
         if (node.point.distanceSquaredTo(target) < distance) {
 //            System.out.println(node.point.distanceTo(target) + " < " + distance);
 //            System.out.println("Change from " + result + " to " + node);
             result = new Point2D(node.point.x(), node.point.y());
             distance = node.point.distanceSquaredTo(target);
+        }
+
+
+        if (node.left != null && node.left.rect.contains(target)) {
+            min(node.left, target);
+            min(node.right, target);
+        } else {
+            min(node.right, target);
+            min(node.left, target);
         }
 
     }
