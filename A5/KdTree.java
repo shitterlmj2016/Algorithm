@@ -1,5 +1,6 @@
 
 
+import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
@@ -294,6 +295,9 @@ public class KdTree {
 
 
         System.out.println(k.nearest(new Point2D(0.074, 0.963)));
+        System.out.println(k.hashCode());
+int [] a ={1,2,3};
+        System.out.println(a.length);
 
     }
 }
