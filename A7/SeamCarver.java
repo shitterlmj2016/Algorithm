@@ -13,7 +13,7 @@ public class SeamCarver {
 
     public Picture picture()                          // current picture
     {
-        return pic;
+        return new Picture(pic);
     }
 
     public int width()                            // width of current picture
@@ -285,7 +285,7 @@ public class SeamCarver {
 //        System.out.println(p.height());
         SeamCarver s = new SeamCarver(p);
         // System.out.println(p.get(1,3));
-        int[] a = {9, 8, 9, 10, 9, 10, 11, 10, 10,10};
+        int[] a = {9, 8, 9, 10, 9, 10, 11, 10, 10, 10};
         s.removeHorizontalSeam(a);
 
         // System.arraycopy(a,2,a,1,4);
