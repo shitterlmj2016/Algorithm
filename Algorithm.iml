@@ -13,8 +13,10 @@
       <sourceFolder url="file://$MODULE_DIR$/Leetcode" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/A6" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/A7" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/A8" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/A6/wordnet" />
       <excludeFolder url="file://$MODULE_DIR$/A7/seam" />
+      <excludeFolder url="file://$MODULE_DIR$/A8/baseball" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
