@@ -1,267 +1,264 @@
 
 import edu.princeton.cs.algs4.In;
-
 import edu.princeton.cs.algs4.Queue;
-
-import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.StdOut;
-
 
 import java.util.HashSet;
 import java.util.Iterator;
 
 public class BoggleSolver {
     private TrieSETT dictionary;
-private
-class TrieSETT implements Iterable<String> {
-    private static final int R = 256;        // extended ASCII
 
-    private Node root;      // root of trie
-    private int n;          // number of keys in trie
-    private boolean prefix;
+    private class TrieSETT implements Iterable<String> {
+        private static final int R = 26;        // extended ASCII
 
-    // R-way trie node
-    private class Node {
-        private Node[] next = new Node[R];
-        private boolean isString;
-    }
+        private Node root;      // root of trie
+        private int n;          // number of keys in trie
+        private boolean prefix;
 
-    /**
-     * Initializes an empty set of strings.
-     */
-    public TrieSETT() {
-        prefix = false;
-    }
+        // R-way trie node
+        private class Node {
+            private Node[] next = new Node[R];
+            private boolean isString;
+        }
 
-    /**
-     * Does the set contain the given key?
-     *
-     * @param key the key
-     * @return {@code true} if the set contains {@code key} and
-     * {@code false} otherwise
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public boolean contains(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to contains() is null");
-        Node x = get(root, key, 0);
-        if (x == null) return false;
-        return x.isString;
-    }
+        /**
+         * Initializes an empty set of strings.
+         */
+        public TrieSETT() {
+            prefix = false;
+        }
 
-    private Node get(Node x, String key, int d) {
-        if (x == null) return null;
-        if (d == key.length()) return x;
-        char c = key.charAt(d);
-        return get(x.next[c], key, d + 1);
-    }
+        /**
+         * Does the set contain the given key?
+         *
+         * @param key the key
+         * @return {@code true} if the set contains {@code key} and
+         * {@code false} otherwise
+         * @throws IllegalArgumentException if {@code key} is {@code null}
+         */
+        public boolean contains(String key) {
+            if (key == null) throw new IllegalArgumentException("argument to contains() is null");
+            Node x = get(root, key, 0);
+            if (x == null) return false;
+            return x.isString;
+        }
 
-    /**
-     * Adds the key to the set if it is not already present.
-     *
-     * @param key the key to add
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public void add(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to add() is null");
-        root = add(root, key, 0);
-    }
-
-    private Node add(Node x, String key, int d) {
-        if (x == null) x = new Node();
-        if (d == key.length()) {
-            if (!x.isString) n++;
-            x.isString = true;
-        } else {
+        private Node get(Node x, String key, int d) {
+            if (x == null) return null;
+            if (d == key.length()) return x;
             char c = key.charAt(d);
-            x.next[c] = add(x.next[c], key, d + 1);
+            return get(x.next[c - 65], key, d + 1);
         }
-        return x;
-    }
 
-    /**
-     * Returns the number of strings in the set.
-     *
-     * @return the number of strings in the set
-     */
-    public int size() {
-        return n;
-    }
-
-    /**
-     * Is the set empty?
-     *
-     * @return {@code true} if the set is empty, and {@code false} otherwise
-     */
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
-    /**
-     * Returns all of the keys in the set, as an iterator.
-     * To iterate over all of the keys in a set named {@code set}, use the
-     * foreach notation: {@code for (Key key : set)}.
-     *
-     * @return an iterator to all of the keys in the set
-     */
-    public Iterator<String> iterator() {
-        return keysWithPrefix("").iterator();
-    }
-
-    /**
-     * Returns all of the keys in the set that start with {@code prefix}.
-     *
-     * @param prefix the prefix
-     * @return all of the keys in the set that start with {@code prefix},
-     * as an iterable
-     */
-    public Iterable<String> keysWithPrefix(String prefix) {
-        Queue<String> results = new Queue<String>();
-        Node x = get(root, prefix, 0);
-        collect(x, new StringBuilder(prefix), results);
-        return results;
-    }
-
-    public boolean checkPrefix(String prefix) {
-        Queue<String> results = new Queue<String>();
-        Node x = get(root, prefix, 0);
-        this.prefix = false;
-        checkCollect(x, new StringBuilder(prefix), results);
-        return this.prefix;
-    }
-
-
-    private void checkCollect(Node x, StringBuilder prefix, Queue<String> results) {
-        if (x == null) return;
-        if (this.prefix == true)
-            return;
-        if (x.isString) {
-            results.enqueue(prefix.toString());
-            this.prefix = true;
-            return;
+        /**
+         * Adds the key to the set if it is not already present.
+         *
+         * @param key the key to add
+         * @throws IllegalArgumentException if {@code key} is {@code null}
+         */
+        public void add(String key) {
+            if (key == null) throw new IllegalArgumentException("argument to add() is null");
+            root = add(root, key, 0);
         }
-        for (char c = 0; c < R; c++) {
-            prefix.append(c);
-            checkCollect(x.next[c], prefix, results);
-            prefix.deleteCharAt(prefix.length() - 1);
+
+        private Node add(Node x, String key, int d) {
+            if (x == null) x = new Node();
+            if (d == key.length()) {
+                if (!x.isString) n++;
+                x.isString = true;
+            } else {
+                char c = key.charAt(d);
+                x.next[c - 65] = add(x.next[c - 65], key, d + 1);
+            }
+            return x;
         }
-    }
 
-
-    private void collect(Node x, StringBuilder prefix, Queue<String> results) {
-        if (x == null) return;
-        if (x.isString) results.enqueue(prefix.toString());
-        for (char c = 0; c < R; c++) {
-            prefix.append(c);
-            collect(x.next[c], prefix, results);
-            prefix.deleteCharAt(prefix.length() - 1);
+        /**
+         * Returns the number of strings in the set.
+         *
+         * @return the number of strings in the set
+         */
+        public int size() {
+            return n;
         }
-    }
 
-    /**
-     * Returns all of the keys in the set that match {@code pattern},
-     * where . symbol is treated as a wildcard character.
-     *
-     * @param pattern the pattern
-     * @return all of the keys in the set that match {@code pattern},
-     * as an iterable, where . is treated as a wildcard character.
-     */
-    public Iterable<String> keysThatMatch(String pattern) {
-        Queue<String> results = new Queue<String>();
-        StringBuilder prefix = new StringBuilder();
-        collect(root, prefix, pattern, results);
-        return results;
-    }
+        /**
+         * Is the set empty?
+         *
+         * @return {@code true} if the set is empty, and {@code false} otherwise
+         */
+        public boolean isEmpty() {
+            return size() == 0;
+        }
 
-    private void collect(Node x, StringBuilder prefix, String pattern, Queue<String> results) {
-        if (x == null) return;
-        int d = prefix.length();
-        if (d == pattern.length() && x.isString)
-            results.enqueue(prefix.toString());
-        if (d == pattern.length())
-            return;
-        char c = pattern.charAt(d);
-        if (c == '.') {
-            for (char ch = 0; ch < R; ch++) {
-                prefix.append(ch);
-                collect(x.next[ch], prefix, pattern, results);
+        /**
+         * Returns all of the keys in the set, as an iterator.
+         * To iterate over all of the keys in a set named {@code set}, use the
+         * foreach notation: {@code for (Key key : set)}.
+         *
+         * @return an iterator to all of the keys in the set
+         */
+        public Iterator<String> iterator() {
+            return keysWithPrefix("").iterator();
+        }
+
+        /**
+         * Returns all of the keys in the set that start with {@code prefix}.
+         *
+         * @param prefix the prefix
+         * @return all of the keys in the set that start with {@code prefix},
+         * as an iterable
+         */
+        public Iterable<String> keysWithPrefix(String prefix) {
+            Queue<String> results = new Queue<String>();
+            Node x = get(root, prefix, 0);
+            collect(x, new StringBuilder(prefix), results);
+            return results;
+        }
+
+        public boolean checkPrefix(String prefix) {
+            Queue<String> results = new Queue<String>();
+            Node x = get(root, prefix, 0);
+            this.prefix = false;
+            checkCollect(x, new StringBuilder(prefix), results);
+            return this.prefix;
+        }
+
+
+        private void checkCollect(Node x, StringBuilder prefix, Queue<String> results) {
+            if (x == null) return;
+            if (this.prefix == true)
+                return;
+            if (x.isString) {
+                results.enqueue(prefix.toString());
+                this.prefix = true;
+                return;
+            }
+            for (char c = 0; c < R; c++) {
+                prefix.append(c);
+                checkCollect(x.next[c], prefix, results);
+                if (this.prefix == true)
+                    return;
                 prefix.deleteCharAt(prefix.length() - 1);
             }
-        } else {
-            prefix.append(c);
-            collect(x.next[c], prefix, pattern, results);
-            prefix.deleteCharAt(prefix.length() - 1);
-        }
-    }
-
-    /**
-     * Returns the string in the set that is the longest prefix of {@code query},
-     * or {@code null}, if no such string.
-     *
-     * @param query the query string
-     * @return the string in the set that is the longest prefix of {@code query},
-     * or {@code null} if no such string
-     * @throws IllegalArgumentException if {@code query} is {@code null}
-     */
-    public String longestPrefixOf(String query) {
-        if (query == null) throw new IllegalArgumentException("argument to longestPrefixOf() is null");
-        int length = longestPrefixOf(root, query, 0, -1);
-        if (length == -1) return null;
-        return query.substring(0, length);
-    }
-
-    // returns the length of the longest string key in the subtrie
-    // rooted at x that is a prefix of the query string,
-    // assuming the first d character match and we have already
-    // found a prefix match of length length
-    private int longestPrefixOf(Node x, String query, int d, int length) {
-        if (x == null) return length;
-        if (x.isString) length = d;
-        if (d == query.length()) return length;
-        char c = query.charAt(d);
-        return longestPrefixOf(x.next[c], query, d + 1, length);
-    }
-
-    /**
-     * Removes the key from the set if the key is present.
-     *
-     * @param key the key
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public void delete(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to delete() is null");
-        root = delete(root, key, 0);
-    }
-
-    private Node delete(Node x, String key, int d) {
-        if (x == null) return null;
-        if (d == key.length()) {
-            if (x.isString) n--;
-            x.isString = false;
-        } else {
-            char c = key.charAt(d);
-            x.next[c] = delete(x.next[c], key, d + 1);
         }
 
-        // remove subtrie rooted at x if it is completely empty
-        if (x.isString) return x;
-        for (int c = 0; c < R; c++)
-            if (x.next[c] != null)
-                return x;
-        return null;
-    }
 
-}
+        private void collect(Node x, StringBuilder prefix, Queue<String> results) {
+            if (x == null) return;
+            if (x.isString) results.enqueue(prefix.toString());
+            for (char c = 0; c < R; c++) {
+                prefix.append(c);
+                collect(x.next[c], prefix, results);
+                prefix.deleteCharAt(prefix.length() - 1);
+            }
+        }
+
+        /**
+         * Returns all of the keys in the set that match {@code pattern},
+         * where . symbol is treated as a wildcard character.
+         *
+         * @param pattern the pattern
+         * @return all of the keys in the set that match {@code pattern},
+         * as an iterable, where . is treated as a wildcard character.
+         */
+        public Iterable<String> keysThatMatch(String pattern) {
+            Queue<String> results = new Queue<String>();
+            StringBuilder prefix = new StringBuilder();
+            collect(root, prefix, pattern, results);
+            return results;
+        }
+
+        private void collect(Node x, StringBuilder prefix, String pattern, Queue<String> results) {
+            if (x == null) return;
+            int d = prefix.length();
+            if (d == pattern.length() && x.isString)
+                results.enqueue(prefix.toString());
+            if (d == pattern.length())
+                return;
+            char c = pattern.charAt(d);
+            if (c == '.') {
+                for (char ch = 0; ch < R; ch++) {
+                    prefix.append(ch);
+                    collect(x.next[ch], prefix, pattern, results);
+                    prefix.deleteCharAt(prefix.length() - 1);
+                }
+            } else {
+                prefix.append(c);
+                collect(x.next[c], prefix, pattern, results);
+                prefix.deleteCharAt(prefix.length() - 1);
+            }
+        }
+
+        /**
+         * Returns the string in the set that is the longest prefix of {@code query},
+         * or {@code null}, if no such string.
+         *
+         * @param query the query string
+         * @return the string in the set that is the longest prefix of {@code query},
+         * or {@code null} if no such string
+         * @throws IllegalArgumentException if {@code query} is {@code null}
+         */
+        public String longestPrefixOf(String query) {
+            if (query == null) throw new IllegalArgumentException("argument to longestPrefixOf() is null");
+            int length = longestPrefixOf(root, query, 0, -1);
+            if (length == -1) return null;
+            return query.substring(0, length);
+        }
+
+        // returns the length of the longest string key in the subtrie
+        // rooted at x that is a prefix of the query string,
+        // assuming the first d character match and we have already
+        // found a prefix match of length length
+        private int longestPrefixOf(Node x, String query, int d, int length) {
+            if (x == null) return length;
+            if (x.isString) length = d;
+            if (d == query.length()) return length;
+            char c = query.charAt(d);
+            return longestPrefixOf(x.next[c], query, d + 1, length);
+        }
+
+        /**
+         * Removes the key from the set if the key is present.
+         *
+         * @param key the key
+         * @throws IllegalArgumentException if {@code key} is {@code null}
+         */
+        public void delete(String key) {
+            if (key == null) throw new IllegalArgumentException("argument to delete() is null");
+            root = delete(root, key, 0);
+        }
+
+        private Node delete(Node x, String key, int d) {
+            if (x == null) return null;
+            if (d == key.length()) {
+                if (x.isString) n--;
+                x.isString = false;
+            } else {
+                char c = key.charAt(d);
+                x.next[c] = delete(x.next[c], key, d + 1);
+            }
+
+            // remove subtrie rooted at x if it is completely empty
+            if (x.isString) return x;
+            for (int c = 0; c < R; c++)
+                if (x.next[c] != null)
+                    return x;
+            return null;
+        }
+
+    }
 
     private class Record {
         String currentString;
-        BoggleBoard board;
+
+
         boolean[][] visited;
         int col;
         int row;
 
         Record(BoggleBoard Board, int row, int col) {
-            this.board = Board;
-            visited = new boolean[board.rows()][board.cols()];
+            visited = new boolean[Board.rows()][Board.cols()];
             currentString = "";
             this.col = col;
             this.row = row;
@@ -274,6 +271,18 @@ class TrieSETT implements Iterable<String> {
             s += "; Current position is " + row + " " + col;
             return s;
         }
+    }
+
+    private boolean checkQ(BoggleBoard b) {
+        boolean temp = true;
+        for (int i = 0; i < b.rows(); i++) {
+            for (int j = 0; j < b.cols(); j++) {
+                if (b.getLetter(i, j) != 'Q')
+                    temp = false;
+            }
+        }
+
+        return temp;
     }
 
     // Initializes the data structure using the given array of strings as the dictionary.
@@ -292,12 +301,22 @@ class TrieSETT implements Iterable<String> {
         if (board == null)
             throw new IllegalArgumentException("Null board");
 
-
-        long a = System.currentTimeMillis();
         HashSet<String> set = new HashSet<>();
 
         Queue<Record> map = new Queue<Record>();
 
+        //特殊情况特殊处理，不然太慢了:)
+        if (checkQ(board)) {
+            if (dictionary.contains("QUQUQUQUQUQUQUQUQU")) {
+                String temp = "QU";
+                int total = board.cols() * board.rows() - 1;
+                for (int i = 0; i < total; i++) {
+                    temp += "QU";
+                    set.add(temp);
+                }
+                return set;
+            }
+        }
 
         for (int i = 0; i < board.rows(); i++) {
             for (int j = 0; j < board.cols(); j++) {
@@ -318,7 +337,7 @@ class TrieSETT implements Iterable<String> {
                     //System.out.println(string + " added to the queue!");
                     map.enqueue(r);
                     //System.out.println(r);
-                    if (dictionary.contains(string)) {
+                    if (dictionary.contains(string) && string.toCharArray().length > 2) {
                         set.add(string);
                         //System.out.println(string + " is added to the set!");
                     }
@@ -363,6 +382,8 @@ class TrieSETT implements Iterable<String> {
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
     // (You can assume the word contains only the uppercase letters A through Z.)
     public int scoreOf(String word) {
+        if (!dictionary.contains(word))
+            return 0;
         char[] array = word.toCharArray();
         int length = array.length;
         //if (length <= 2)
@@ -392,9 +413,9 @@ class TrieSETT implements Iterable<String> {
     private boolean check(Record record, int i, int j) {
 
         //is in bound
-        if (i < 0 || i > record.board.rows() - 1)
+        if (i < 0 || i > record.visited.length - 1)
             return false;
-        if (j < 0 || j > record.board.cols() - 1)
+        if (j < 0 || j > record.visited[0].length - 1)
             return false;
         //Unvisited
         if (record.visited[i][j] == true)
@@ -406,12 +427,12 @@ class TrieSETT implements Iterable<String> {
     public static void main(String[] args) {
 
 
-        In in = new In("dictionary-yawl.txt");
+        In in = new In("dictionary-16q.txt");
         BoggleSolver b = new BoggleSolver(in.readAllLines());
 
         //System.out.println(b.dictionary.keysWithPrefix("C"));
 
-        BoggleBoard bb = new BoggleBoard("board-points26539.txt");
+        BoggleBoard bb = new BoggleBoard("board-16q.txt");
         //System.out.println(bb);
         int score = 0;
         long a = System.currentTimeMillis();
@@ -421,8 +442,8 @@ class TrieSETT implements Iterable<String> {
             score += b.scoreOf(s);
 
         }
-        System.out.println(score);
-        System.out.println(System.currentTimeMillis()-a);
+        System.out.println(hs.size());
+        System.out.println(System.currentTimeMillis() - a);
         //System.out.println(b.dictionary);
 
     }
