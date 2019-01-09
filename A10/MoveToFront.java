@@ -28,8 +28,6 @@ public class MoveToFront {
         }
         position[i] = 0;
         list[0] = i;
-        System.out.print("PosA: ");
-        HexDump.dump(position['A']);
     }
 
     public static void encode() {
@@ -38,8 +36,6 @@ public class MoveToFront {
         while (!BinaryStdIn.isEmpty()) {
             char c = BinaryStdIn.readChar();
             BinaryStdOut.write(mtf.position[c]);
-            HexDump.dump(mtf.position[c]);
-
             mtf.shift(c);
         }
         BinaryStdOut.close();
@@ -47,33 +43,35 @@ public class MoveToFront {
 
     // apply move-to-front decoding, reading from standard input and writing to standard output
     public static void decode() {
+        MoveToFront mtf = new MoveToFront();
 
+        while (!BinaryStdIn.isEmpty()) {
+            char c = BinaryStdIn.readChar();
+            BinaryStdOut.write(mtf.list[c]);
+            //System.out.println(1);
+            mtf.shift(mtf.list[c]);
+        }
+        BinaryStdOut.close();
     }
 
     private void printPosition() {
         for (int i = 0; i < position.length; i++) {
-            HexDump.dump(position[i]);
+          //  HexDump.dump(position[i]);
         }
     }
 
     private void printList() {
         for (int i = 0; i < position.length; i++) {
-            HexDump.dump(list[i]);
+          //  HexDump.dump(list[i]);
         }
     }
 
     // if args[0] is '-', apply move-to-front encoding
     // if args[0] is '+', apply move-to-front decoding
     public static void main(String[] args) {
-//        if (args[0].equals("-")) encode();
-//        else if (args[0].equals("+")) decode();
-//        else throw new IllegalArgumentException("Illegal command line argument");
-
-        MoveToFront m = new MoveToFront();
-        m.encode();
-
-
-
+        if (args[0].equals("-")) encode();
+        else if (args[0].equals("+")) decode();
+        else throw new IllegalArgumentException("Illegal command line argument");
     }
 
 }
